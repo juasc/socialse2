@@ -1,0 +1,35 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin - Posts</title>
+
+</head>
+<body>
+<header th:replace="~{fragments :: header}"></header>
+<h1>List posts</h1>
+<table>
+    <thead>
+    <th>#</th>
+    <th>Title</th>
+    <th>Short Description</th>
+    <th>Content</th>
+    <th>Creation Date</th>
+    <th>Action</th>
+    </thead>
+    <tbody>
+    <tr th:each="post,postStat : ${posts}">
+        <td th:text="${postStat.count}">1</td>
+        <td th:text="${post.title}">Title</td>
+        <td th:text="${post.shortDescription}">Short Description</td>
+        <td th:text="${post.content}">Content</td>
+        <td th:text="${post.createdAt}">Creation Time</td>
+        <td>
+            <a th:href="@{/admin/posts/{postId}/edit(postId=${post.id})}">Edit</a>
+            <a th:href="@{/admin/posts/{postId}/delete(postId=${post.id})}">Delete</a>
+            <a th:href="@{/admin/posts/{postId}(postId=${post.id})}">View</a>
+        </td>
+    </tr>
+    </tbody>
+</table>
+</body>
+</html>

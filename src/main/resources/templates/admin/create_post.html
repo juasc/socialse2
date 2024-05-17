@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin - Create Post</title>
+    <script src="https://cdn.ckeditor.com/ckeditor5/41.4.2/classic/ckeditor.js"></script>
+</head>
+<body>
+<header th:replace="~{fragments :: header}"></header>
+<form method="post" role="form" th:action="@{/admin/posts/create}" th:object="${postDto}">
+    <h1>Create Post</h1>
+    <label for="title">Title:</label><br>
+    <input id="title" th:field="*{title}" type="text"><br>
+    <p th:errors="*{title}" th:if="${#fields.hasErrors('title')}"></p>
+    <label for="shortDescription">Short description:</label><br>
+    <input id="shortDescription" th:field="*{shortDescription}" type="text"><br>
+    <p th:errors="*{shortDescription}" th:if="${#fields.hasErrors('shortDescription')}"></p>
+    <label for="content">Content:</label><br>
+    <textarea id="content" th:field="*{content}"></textarea><br>
+    <p th:errors="*{content}" th:if="${#fields.hasErrors('content')}"></p>
+    <input type="submit" value="Submit">
+</form>
+
+<script>
+    ClassicEditor
+        .create(document.querySelector('#content'))
+        .then(editor => {
+            console.log(editor);
+        })
+        .catch(error => {
+            console.error(error);
+        });
+</script>
+</body>
+</html>

@@ -1,111 +1,94 @@
 package org.example.socialse2.controller;
 
-import org.example.socialse2.model.Comment;
-import org.example.socialse2.model.Post;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-
-import org.example.socialse2.repository.CommentRepository;
-import org.example.socialse2.repository.PostRepository;
-
-import java.security.Principal;
-import java.util.List;
-import java.util.Optional;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
+import jakarta.validation.Valid;
+import org.example.socialse2.dto.PostDto;
+import org.example.socialse2.service.PostService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @Controller
-@RequestMapping("/user-page")
 public class PostController {
-  @Autowired
-  private final PostRepository postRepository;
 
-  @Autowired
-    private UserDetailsService userDetailsService;
-  private final CommentRepository commentRepository;
+    private static final Logger log = LoggerFactory.getLogger(PostController.class);
 
-  private final int PAGINATIONSIZE = 999;
+    private final PostService postService;
 
-  public PostController(PostRepository postRepository, CommentRepository commentRepository) {
-    this.postRepository = postRepository;
-    this.commentRepository = commentRepository;
-  }
-
-  @GetMapping("user-page")
-  public String getUserPage (Model model, Principal principal, @RequestParam(value = "page", defaultValue = "0") int page,
-                             @RequestParam(value = "size", defaultValue = "" + PAGINATIONSIZE) int size) {
-    PageRequest pageRequest = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "postId"));
-    Page<Post> postsPage = postRepository.findAll(pageRequest);
-    List<Post> posts = postsPage.toList();
-
-    long postCount = postRepository.count();
-    int numOfPages = (int) Math.ceil((postCount * 1.0) / PAGINATIONSIZE);
-    model.addAttribute("posts", posts);
-    model.addAttribute("postCount", postCount);
-    model.addAttribute("pageRequested", page);
-    model.addAttribute("paginationSize", PAGINATIONSIZE);
-    model.addAttribute("numOfPages", numOfPages);
-
-
-    UserDetails userDetails = userDetailsService.loadUserByUsername(principal.getName());
-    model.addAttribute("user", userDetails);
-    return "posts";
-  }
-
-
-  @GetMapping("/posts/{id}")
-  public String getPostById(@PathVariable long id, Model model, Principal principal) {
-    Optional<Post> postOptional = postRepository.findById(id);
-    UserDetails userDetails = userDetailsService.loadUserByUsername(principal.getName());
-    model.addAttribute("user", userDetails);
-    if (postOptional.isPresent()) {
-      model.addAttribute("post", postOptional.get());
-
-      List<Comment> commentsOptional = commentRepository.findCommentsByPostId(id);
-      model.addAttribute("comments", commentsOptional);
-
-    } else {
-      model.addAttribute("error", "No post");
+    public PostController(PostService postService) {
+        this.postService = postService;
     }
-    return "post";
-  }
 
-  @GetMapping("/user-page/posts/add")
-  public String add(Model model) {
-    model.addAttribute("newPost", new Post());
-    return "addPost";
-  }
+    @GetMapping("/admin/posts")
+    private String posts(Model model) {
+        model.addAttribute("posts", postService.getPosts());
+        return "admin/posts";
+    }
 
-  @PostMapping("/add")
-  public String addPost(@RequestBody Post newPost) {
-    postRepository.save(newPost);
-    return "redirect:/posts";
-  }
+    @GetMapping("/admin/posts/create")
+    private String newPostForm(Model model) {
+        PostDto postDto = new PostDto();
+        model.addAttribute("postDto", postDto);
+        return "admin/create_post";
+    }
 
-  @PutMapping("/{id}")
-  public String editPost(@RequestBody Post newPost, @PathVariable Long id, Model model) {
-    return postRepository.findById(id).map(post -> {
-      model.addAttribute("editedPost", post);
-      return "editPost";
-    }).orElse("redirect:/");
-  }
+    @PostMapping("/admin/posts/create")
+    public String createPost(@Valid @ModelAttribute("postDto") PostDto postDto,
+                             BindingResult bindingResult,
+                             Model model) {
+        if (bindingResult.hasErrors()) {
+            model.addAttribute("postDto", postDto);
+            return "admin/create_post";
+        }
+        postService.createPost(postDto);
+        log.info("Post created: {}", postDto.toString());
+        return "redirect:/admin/posts";
+    }
 
-  @DeleteMapping("/{id}")
-  public String deletePost(@PathVariable Long id) {
-    postRepository.deleteById(id);
-    return "redirect:/";
-  }
+    @GetMapping("/admin/posts/{postId}/edit")
+    private String editPostForm(@PathVariable Long postId, Model model) {
+        PostDto postDto = postService.getPost(postId);
+        model.addAttribute("postDto", postDto);
+        return "admin/edit_post";
+    }
+
+    @PostMapping("/admin/posts/{postId}/edit")
+    public String editPost(@PathVariable Long postId,
+                           @ModelAttribute("postDto") PostDto postDto,
+                           BindingResult bindingResult,
+                           Model model) {
+        if (bindingResult.hasErrors()) {
+            model.addAttribute("postDto", postDto);
+            return "admin/edit_post";
+        }
+        postDto.setId(postId);
+        postService.updatePost(postDto);
+        log.info("Post updated: {}", postDto);
+        return "redirect:/admin/posts";
+    }
+
+    @GetMapping("/admin/posts/{postId}/delete")
+    public String deletePost(@PathVariable Long postId) {
+        postService.deletePost(postId);
+        return "redirect:/admin/posts";
+    }
+
+    @GetMapping("/admin/posts/{postId}")
+    public String viewPost(@PathVariable Long postId, Model model) {
+        PostDto postDto = postService.getPost(postId);
+        model.addAttribute("postDto", postDto);
+        return "admin/view_post";
+    }
+
+    @GetMapping("/admin/posts/search")
+    public String searchPosts(@RequestParam(value = "query") String query, Model model) {
+        List<PostDto> postDtoList = postService.searchPost(query);
+        model.addAttribute("postDtoList", postDtoList);
+        return "admin/posts";
+    }
+
 }

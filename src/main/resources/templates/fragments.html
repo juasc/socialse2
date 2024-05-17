@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Fragment File</title>
+</head>
+<body>
+<header th:fragment="header">
+    <nav>
+        <ul>
+            <li><a href="/admin/posts">Posts</a></li>
+            <li><a href="/admin/posts/create">Create Post</a></li>
+            <li>
+                <form method="get" th:action="@{/admin/posts/search}">
+                    <label>
+                        <input name="query" type="text">
+                    </label>
+                    <button type="submit">Search</button>
+                </form>
+            </li>
+        </ul>
+    </nav>
+</header>
+
+<footer th:fragment="footer">
+    <!-- Footer content goes here -->
+    <p>Copyright © 2024</p>
+</footer>
+</body>
+</html>

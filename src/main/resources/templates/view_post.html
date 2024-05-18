@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>View Post</title>
+</head>
+<body>
+<header th:replace="~{fragments :: header}"></header>
+<h1 th:text="${postDto.title}"></h1>
+<hr>
+<h4 th:text="${postDto.shortDescription}"></h4>
+<hr>
+<div th:utext="${postDto.content}"></div>
+<h3>Comments:</h3>
+
+<!-- Start of Comments Section -->
+<div th:each="comment : ${comments}">
+    <hr>
+    <h5>Anonymous user</h5>
+    <p th:text="${comment.content}"></p>
+    <a th:href="@{/posts/__${postId}__/comments/__${comment.id}__/delete}">Delete</a>
+</div>
+<!-- End of Comments Section -->
+
+<form method="post" role="form" th:action="@{/posts/__${postId}__/comments}" th:object="${commentDto}">
+    <h4>Leave a comment</h4>
+    <label for="comment">Content</label>
+    <br>
+    <textarea cols="60" id="comment" name="comment" rows="10" th:field="*{content}"></textarea>
+    <br>
+    <input type="submit" value="Submit">
+</form>
+</body>
+</html>

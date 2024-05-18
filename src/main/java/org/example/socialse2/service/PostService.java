@@ -16,6 +16,6 @@ public interface PostService {
 
     void deletePost(Long postId);
 
-    List<PostDto> searchPost(String query);
+    List<PostDto> searchPosts(String query);
 
 }

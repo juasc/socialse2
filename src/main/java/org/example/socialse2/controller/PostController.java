@@ -1,7 +1,9 @@
 package org.example.socialse2.controller;
 
 import jakarta.validation.Valid;
+import org.example.socialse2.dto.CommentDto;
 import org.example.socialse2.dto.PostDto;
+import org.example.socialse2.service.CommentService;
 import org.example.socialse2.service.PostService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,76 +21,96 @@ public class PostController {
 
     private final PostService postService;
 
-    public PostController(PostService postService) {
+    private final CommentService commentService;
+
+    public PostController(PostService postService, CommentService commentService) {
         this.postService = postService;
+        this.commentService = commentService;
     }
 
-    @GetMapping("/admin/posts")
-    private String posts(Model model) {
-        model.addAttribute("posts", postService.getPosts());
-        return "admin/posts";
-    }
-
-    @GetMapping("/admin/posts/create")
+    @GetMapping("/posts/create")
     private String newPostForm(Model model) {
         PostDto postDto = new PostDto();
         model.addAttribute("postDto", postDto);
-        return "admin/create_post";
+        return "create_post";
     }
 
-    @PostMapping("/admin/posts/create")
+    @PostMapping("/posts/create")
     public String createPost(@Valid @ModelAttribute("postDto") PostDto postDto,
                              BindingResult bindingResult,
                              Model model) {
         if (bindingResult.hasErrors()) {
             model.addAttribute("postDto", postDto);
-            return "admin/create_post";
+            return "create_post";
         }
         postService.createPost(postDto);
         log.info("Post created: {}", postDto.toString());
-        return "redirect:/admin/posts";
+        return "redirect:/";
     }
 
-    @GetMapping("/admin/posts/{postId}/edit")
+    @GetMapping("/posts/{postId}/edit")
     private String editPostForm(@PathVariable Long postId, Model model) {
         PostDto postDto = postService.getPost(postId);
         model.addAttribute("postDto", postDto);
-        return "admin/edit_post";
+        return "edit_post";
     }
 
-    @PostMapping("/admin/posts/{postId}/edit")
+    @PostMapping("/posts/{postId}/edit")
     public String editPost(@PathVariable Long postId,
                            @ModelAttribute("postDto") PostDto postDto,
                            BindingResult bindingResult,
                            Model model) {
         if (bindingResult.hasErrors()) {
             model.addAttribute("postDto", postDto);
-            return "admin/edit_post";
+            return "edit_post";
         }
         postDto.setId(postId);
         postService.updatePost(postDto);
         log.info("Post updated: {}", postDto);
-        return "redirect:/admin/posts";
+        return "redirect:/";
     }
 
-    @GetMapping("/admin/posts/{postId}/delete")
+    @GetMapping("/posts/{postId}/delete")
     public String deletePost(@PathVariable Long postId) {
         postService.deletePost(postId);
-        return "redirect:/admin/posts";
+        return "redirect:/";
     }
 
-    @GetMapping("/admin/posts/{postId}")
+    @GetMapping("/posts/{postId}")
     public String viewPost(@PathVariable Long postId, Model model) {
         PostDto postDto = postService.getPost(postId);
         model.addAttribute("postDto", postDto);
-        return "admin/view_post";
+        model.addAttribute("commentDto", new CommentDto());
+        model.addAttribute("comments", commentService.getComments(postId));
+        return "view_post";
     }
 
-    @GetMapping("/admin/posts/search")
+    @PostMapping("/posts/{postId}/comments")
+    public String addComment(@PathVariable Long postId, @ModelAttribute("commentDto") CommentDto commentDto) {
+        commentService.addComment(postId, commentDto);
+        return "redirect:/posts/{postId}";
+    }
+
+    @GetMapping("/posts/{postId}/comments/{commentId}/delete")
+    public String deleteComment(@PathVariable Long postId,
+                                @PathVariable Long commentId,
+                                @ModelAttribute("commentDto") CommentDto commentDto) {
+        commentService.deleteComment(commentId);
+        return "redirect:/posts/{postId}";
+    }
+
+    @GetMapping("/posts/search")
     public String searchPosts(@RequestParam(value = "query") String query, Model model) {
-        List<PostDto> postDtoList = postService.searchPost(query);
-        model.addAttribute("postDtoList", postDtoList);
-        return "admin/posts";
+        log.info("Searching posts: {}", query);
+        List<PostDto> postDtoList = postService.searchPosts(query);
+        model.addAttribute("posts", postDtoList);
+        return "index";
+    }
+
+    @GetMapping("/")
+    public String index(Model model) {
+        model.addAttribute("posts", postService.getPosts());
+        return "index";
     }
 
 }

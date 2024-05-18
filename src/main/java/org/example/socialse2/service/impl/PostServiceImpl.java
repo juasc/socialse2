@@ -22,24 +22,24 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public List<PostDto> getPosts() {
-        return postRepository.findAll().stream().map(PostMapper::mapToPostDto).collect(Collectors.toList());
+        return postRepository.findAll().stream().map(PostMapper::toDto).collect(Collectors.toList());
     }
 
     public void createPost(PostDto postDto) {
-        Post post = PostMapper.mapToPost(postDto);
+        Post post = PostMapper.toEntity(postDto);
         postRepository.save(post);
     }
 
     @Override
     public PostDto getPost(Long id) {
         return postRepository.findById(id)
-                             .map(PostMapper::mapToPostDto)
+                             .map(PostMapper::toDto)
                              .orElseThrow(() -> new NoSuchElementException("Post with id " + id + " not found"));
     }
 
     @Override
     public void updatePost(PostDto postDto) {
-        Post post = PostMapper.mapToPost(postDto);
+        Post post = PostMapper.toEntity(postDto);
         postRepository.save(post);
     }
 
@@ -49,8 +49,8 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public List<PostDto> searchPost(String query) {
-        return postRepository.searchPosts(query).stream().map(PostMapper::mapToPostDto).collect(Collectors.toList());
+    public List<PostDto> searchPosts(String query) {
+        return postRepository.searchPosts(query).stream().map(PostMapper::toDto).collect(Collectors.toList());
     }
 
 }

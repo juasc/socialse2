@@ -6,6 +6,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -19,14 +20,9 @@ public class Post {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    //    @ManyToOne
-    //    @JoinColumn(name = "user_id")
-    //    private User author;
 
     @Column(nullable = false)
     private String title;
-
-    private String url;
 
     private String imageUrl;
 
@@ -36,10 +32,17 @@ public class Post {
 
     private String shortDescription;
 
+    private Long upVotes;
+
+    private Long downVotes;
+
     @CreationTimestamp
     private LocalDateTime createdAt;
 
     @UpdateTimestamp
     private LocalDateTime updatedAt;
+
+    @OneToMany(mappedBy = "post", cascade = CascadeType.REMOVE)
+    private Set<Comment> comments;
 
 }

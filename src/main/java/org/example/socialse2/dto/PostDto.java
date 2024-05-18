@@ -29,7 +29,9 @@ public class PostDto {
 
     private String imageUrl;
 
-    private String url;
+    private Long upVotes;
+
+    private Long downVotes;
 
     private LocalDateTime createdAt;
 

@@ -1,7 +1,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Admin - Posts</title>
+    <title>Home</title>
 
 </head>
 <body>
@@ -17,16 +17,14 @@
     <th>Action</th>
     </thead>
     <tbody>
-    <tr th:each="post,postStat : ${posts}">
+    <tr th:each="post, postStat : ${posts}">
         <td th:text="${postStat.count}">1</td>
         <td th:text="${post.title}">Title</td>
         <td th:text="${post.shortDescription}">Short Description</td>
         <td th:text="${post.content}">Content</td>
         <td th:text="${#temporals.format(post.createdAt,'hh:mm:ss - dd/MM/yyyy')}">Creation Time</td>
         <td>
-            <a th:href="@{/admin/posts/{postId}/edit(postId=${post.id})}">Edit</a>
-            <a th:href="@{/admin/posts/{postId}/delete(postId=${post.id})}">Delete</a>
-            <a th:href="@{/admin/posts/{postId}(postId=${post.id})}">View</a>
+            <a th:href="@{/posts/{postId}(postId=${post.id})}">View</a>
         </td>
     </tr>
     </tbody>

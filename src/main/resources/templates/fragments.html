@@ -8,10 +8,11 @@
 <header th:fragment="header">
     <nav>
         <ul>
-            <li><a href="/admin/posts">Posts</a></li>
-            <li><a href="/admin/posts/create">Create Post</a></li>
+            <li><a th:href="@{/}">Home</a></li>
+            <li><a th:href="@{/admin}">Admin</a></li>
+            <li><a th:href="@{/posts/create}">Create Post</a></li>
             <li>
-                <form method="get" th:action="@{/admin/posts/search}">
+                <form method="get" th:action="@{/posts/search}">
                     <label>
                         <input name="query" type="text">
                     </label>

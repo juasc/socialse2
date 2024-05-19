@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Login</title>
+</head>
+<body>
+<header th:replace="~{fragments :: header}"></header>
+<form method="post" th:action="@{/login}">
+    <label for="username">Username:</label><br>
+    <input id="username" name="username" required type="text"><br>
+
+    <label for="password">Password:</label><br>
+    <input id="password" name="password" required type="password"><br>
+
+    <input type="submit" value="Login">
+</form>
+<p class="error" th:if="${param.error}">Invalid username or password.</p>
+<p class="message" th:if="${param.logout}">You have been logged out successfully.</p>
+</body>
+</html>

@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Registration Form</title>
+</head>
+<body>
+<header th:replace="~{fragments :: header}"></header>
+<form method="post" role="form" th:action="@{/register}" th:object="${registrationDto}">
+    <label for="firstName">First Name:</label><br>
+    <input id="firstName" name="firstName" th:field="*{firstName}" type="text"><br>
+    <p th:errors="*{firstName}" th:if="${#fields.hasErrors('firstName')}"></p>
+
+    <label for="lastName">Last Name:</label><br>
+    <input id="lastName" name="lastName" th:field="*{lastName}" type="text"><br>
+    <p th:errors="*{lastName}" th:if="${#fields.hasErrors('lastName')}"></p>
+
+    <label for="username">Username:</label><br>
+    <input id="username" name="username" th:field="*{username}" type="text"><br>
+    <p th:errors="*{username}" th:if="${#fields.hasErrors('username')}"></p>
+
+    <label for="password">Password:</label><br>
+    <input id="password" name="password" th:field="*{password}" type="password"><br>
+    <p th:errors="*{password}" th:if="${#fields.hasErrors('password')}"></p>
+
+    <label for="confirmPassword">Confirm Password:</label><br>
+    <input id="confirmPassword" name="confirmPassword" th:field="*{confirmPassword}" type="password"><br>
+    <p th:errors="*{confirmPassword}" th:if="${#fields.hasErrors('confirmPassword')}"></p>
+
+    <input type="submit" value="Submit">
+    <p th:if="${param.success}">You have successfully registered!</p>
+</form>
+</body>
+</html>

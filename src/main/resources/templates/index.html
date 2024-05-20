@@ -1,39 +1,64 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <title>Home</title>
+    <!-- Include locally loaded Bootstrap 5 CSS -->
+    <link href="/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        /* Additional styling */
+        .post-container {
+            border: 1px solid #ddd;
+            padding: 20px;
+            margin-bottom: 20px;
+            display: flex;
+            flex-direction: row;
+        }
+
+        .post-image {
+            width: 200px;
+            height: 150px;
+            object-fit: cover;
+            margin-right: 20px; /* Add margin between image and text */
+        }
+
+        .post-content {
+            flex: 1;
+        }
+
+        .post-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+    </style>
 </head>
 <body>
 <header th:replace="~{fragments :: header}"></header>
-<h1>List posts</h1>
-<table>
-    <thead>
-    <th>#</th>
-    <th>Title</th>
-    <th>Short Description</th>
-    <th>Content</th>
-    <th>Image</th>
-    <th>Creation Date</th>
-    <th>Action</th>
-    </thead>
-    <tbody>
-    <tr th:each="post, postStat : ${posts}">
-        <td th:text="${postStat.count}">1</td>
-        <td th:text="${post.title}">Title</td>
-        <td th:text="${post.shortDescription}">Short Description</td>
-        <td th:text="${post.content}">Content</td>
-        <td><img alt="Post image" height="100" th:src="@{/post/image/{id}(id=${post.id})}" width="100"></td>
-        <td th:text="${#temporals.format(post.createdAt,'hh:mm:ss - dd/MM/yyyy')}">Creation Time</td>
-        <td>
-            <a th:href="@{/post/{postId}(postId=${post.id})}">View</a>
-            <div th:if="${#authentication.name == post.getOwnerName}">
-                <a th:href="@{/post/{postId}/edit(postId=${post.id})}">Edit</a>
-                <a th:href="@{/post/{postId}/delete(postId=${post.id})}">Delete</a>
+<div class="container mt-5">
+    <h1 class="mb-4">List posts</h1>
+    <!-- Iterate over each post -->
+    <div class="row">
+        <div class="col-md-12">
+            <div class="post-container" th:each="post : ${posts}">
+                <!-- Display post image -->
+                <img alt="Post image" class="post-image" th:src="@{/post/image/{id}(id=${post.id})}">
+                <div class="post-content">
+                    <h2 th:text="${post.title}">Title</h2>
+                    <p th:text="${post.shortDescription}">Short Description</p>
+                    <p th:text="${#temporals.format(post.createdAt,'hh:mm:ss - dd/MM/yyyy')}">Creation Time</p>
+                    <div class="post-buttons">
+                        <a class="btn btn-primary" th:href="@{/post/{postId}(postId=${post.id})}">View</a>
+                        <!-- Show edit and delete options if the user is the owner -->
+                        <div th:if="${#authentication.name == post.getOwnerName}">
+                            <a class="btn btn-secondary" th:href="@{/post/{postId}/edit(postId=${post.id})}">Edit</a>
+                            <a class="btn btn-danger" th:href="@{/post/{postId}/delete(postId=${post.id})}">Delete</a>
+                        </div>
+                    </div>
+                </div>
             </div>
-        </td>
-    </tr>
-    </tbody>
-</table>
+        </div>
+    </div>
+</div>
 </body>
 </html>

@@ -3,19 +3,30 @@
 <head>
     <meta charset="UTF-8">
     <title>Login</title>
+    <!-- Include local Bootstrap 5 CSS -->
+    <link href="/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
 <header th:replace="~{fragments :: header}"></header>
-<form method="post" th:action="@{/login}">
-    <label for="username">Username:</label><br>
-    <input id="username" name="username" required type="text"><br>
-
-    <label for="password">Password:</label><br>
-    <input id="password" name="password" required type="password"><br>
-
-    <input type="submit" value="Login">
-</form>
-<p class="error" th:if="${param.error}">Invalid username or password.</p>
-<p class="message" th:if="${param.logout}">You have been logged out successfully.</p>
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <form class="border p-4 rounded" method="post" th:action="@{/login}">
+                <h2 class="mb-4">Login</h2>
+                <div class="mb-3">
+                    <label class="form-label" for="username">Username:</label>
+                    <input class="form-control" id="username" name="username" required type="text">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label" for="password">Password:</label>
+                    <input class="form-control" id="password" name="password" required type="password">
+                </div>
+                <button class="btn btn-primary" type="submit">Login</button>
+            </form>
+            <p class="error mt-3" th:if="${param.error}">Invalid username or password.</p>
+            <p class="message mt-3" th:if="${param.logout}">You have been logged out successfully.</p>
+        </div>
+    </div>
+</div>
 </body>
 </html>

@@ -8,11 +8,13 @@ import org.example.socialse2.repository.PostRepository;
 import org.example.socialse2.repository.UserRepository;
 import org.example.socialse2.service.PostService;
 import org.example.socialse2.util.SecurityUtils;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -29,7 +31,10 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public List<PostDto> getPosts() {
-        return postRepository.findAll().stream().map(PostMapper::toDto).collect(Collectors.toList());
+        // Fetch posts sorted by createdAt in descending order
+        List<Post> sortedPosts = postRepository.findAll(Sort.by(Sort.Direction.DESC, "createdAt"));
+        // Map the sorted posts to DTOs
+        return sortedPosts.stream().map(PostMapper::toDto).collect(Collectors.toList());
     }
 
     public void createPost(PostDto postDto) {
@@ -50,6 +55,10 @@ public class PostServiceImpl implements PostService {
     @Override
     public void updatePost(PostDto postDto) {
         Post post = PostMapper.toEntity(postDto);
+        Optional<User> userOptional = userRepository.findById(postDto.getOwnerId());
+        User user = userOptional.orElseThrow(() -> new RuntimeException("User not found with id: " +
+                                                                        postDto.getOwnerId()));
+        post.setUser(user);
         postRepository.save(post);
     }
 

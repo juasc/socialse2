@@ -16,6 +16,7 @@ public class PostMapper {
                       .upVotes(post.getUpVotes())
                       .downVotes(post.getDownVotes())
                       .ownerName(post.getUser().getUsername())
+                      .ownerId(post.getUser().getId())
                       .shortDescription(post.getShortDescription())
                       .build();
     }

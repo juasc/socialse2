@@ -55,6 +55,7 @@ public class PostController {
         }
         if (bindingResult.hasErrors()) {
             model.addAttribute("postDto", postDto);
+            log.error(bindingResult.getAllErrors().toString());
             return "post/create";
         }
         if (postDto.getImageFile() != null && !postDto.getImageFile().isEmpty()) {
@@ -84,6 +85,7 @@ public class PostController {
                            Principal principal) throws IOException {
         if (bindingResult.hasErrors()) {
             model.addAttribute("postDto", postDto);
+            log.error(bindingResult.getAllErrors().toString());
             return "post/edit";
         }
         if (postDto.getImageFile() != null && !postDto.getImageFile().isEmpty()) {

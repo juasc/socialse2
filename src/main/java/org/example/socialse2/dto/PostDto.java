@@ -42,4 +42,6 @@ public class PostDto {
 
     private String ownerName;
 
+    private Long ownerId;
+
 }

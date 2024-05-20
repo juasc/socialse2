@@ -3,59 +3,85 @@
 <head>
     <meta charset="UTF-8">
     <title>Edit Profile</title>
+    <!-- Include local Bootstrap 5 CSS -->
+    <link href="/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
 <header th:replace="~{fragments :: header}"></header>
 
-<div th:object="${user}">
-    <h1>Edit Profile</h1>
-    <form enctype="multipart/form-data" th:action="@{/user/edit}" th:method="post">
-        <input th:field="*{id}" type="hidden">
-        <label for="firstName">First Name:</label>
-        <input id="firstName" th:field="*{firstName}" type="text">
-        <span th:errors="*{firstName}" th:if="${#fields.hasErrors('firstName')}"></span><br>
+<div class="container mt-5">
+    <div th:object="${user}">
+        <h1>Edit Profile</h1>
+        <form enctype="multipart/form-data" th:action="@{/user/edit}" th:method="post">
+            <input th:field="*{id}" type="hidden">
+            <div class="mb-3">
+                <label class="form-label" for="firstName">First Name:</label>
+                <input class="form-control" id="firstName" th:field="*{firstName}" type="text">
+                <span class="text-danger" th:errors="*{firstName}"></span>
+            </div>
 
-        <label for="lastName">Last Name:</label>
-        <input id="lastName" th:field="*{lastName}" type="text">
-        <span th:errors="*{lastName}" th:if="${#fields.hasErrors('lastName')}"></span><br>
+            <div class="mb-3">
+                <label class="form-label" for="lastName">Last Name:</label>
+                <input class="form-control" id="lastName" th:field="*{lastName}" type="text">
+                <span class="text-danger" th:errors="*{lastName}"></span>
+            </div>
 
-        <label for="email">Email:</label>
-        <input id="email" th:field="*{email}" type="email">
-        <span th:errors="*{email}" th:if="${#fields.hasErrors('email')}"></span><br>
+            <div class="mb-3">
+                <label class="form-label" for="email">Email:</label>
+                <input class="form-control" id="email" th:field="*{email}" type="email">
+                <span class="text-danger" th:errors="*{email}"></span>
+            </div>
 
-        <label for="username">Username:</label>
-        <input id="username" th:field="*{username}" type="text">
-        <span th:errors="*{username}" th:if="${#fields.hasErrors('username')}"></span><br>
+            <div class="mb-3">
+                <label class="form-label" for="username">Username:</label>
+                <input class="form-control" id="username" th:field="*{username}" type="text">
+                <span class="text-danger" th:errors="*{username}"></span>
+            </div>
 
-        <label for="password">Password:</label>
-        <input id="password" th:field="*{password}" type="password">
-        <span th:errors="*{password}" th:if="${#fields.hasErrors('password')}"></span><br>
+            <div class="mb-3">
+                <label class="form-label" for="password">Password:</label>
+                <input class="form-control" id="password" th:field="*{password}" type="password">
+                <span class="text-danger" th:errors="*{password}"></span>
+            </div>
 
-        <!-- Additional Fields -->
-        <label for="bio">Bio:</label>
-        <textarea id="bio" th:field="*{bio}"></textarea>
-        <span th:errors="*{bio}" th:if="${#fields.hasErrors('bio')}"></span><br>
+            <!-- Additional Fields -->
+            <div class="mb-3">
+                <label class="form-label" for="bio">Bio:</label>
+                <textarea class="form-control" id="bio" th:field="*{bio}"></textarea>
+                <span class="text-danger" th:errors="*{bio}"></span>
+            </div>
 
-        <label for="website">Website:</label>
-        <input id="website" th:field="*{website}" type="text">
-        <span th:errors="*{website}" th:if="${#fields.hasErrors('website')}"></span><br>
+            <div class="mb-3">
+                <label class="form-label" for="website">Website:</label>
+                <input class="form-control" id="website" th:field="*{website}" type="text">
+                <span class="text-danger" th:errors="*{website}"></span>
+            </div>
 
-        <label for="dateOfBirth">Date of Birth:</label>
-        <input id="dateOfBirth" th:field="*{dateOfBirth}" type="date">
-        <span th:errors="*{dateOfBirth}" th:if="${#fields.hasErrors('dateOfBirth')}"></span><br>
+            <div class="mb-3">
+                <label class="form-label" for="dateOfBirth">Date of Birth:</label>
+                <input class="form-control" id="dateOfBirth" th:field="*{dateOfBirth}" type="date">
+                <span class="text-danger" th:errors="*{dateOfBirth}"></span>
+            </div>
 
-        <!-- Current Profile Image -->
-        <label for="currentImage">Current Profile Image:</label><br>
-        <img alt="Profile picture" height="100" id="currentImage" th:src="@{/user/image/{id}(id=${user.id})}"
-             width="100"><br>
+            <!-- Current Profile Image -->
+            <div class="mb-3">
+                <label class="form-label" for="currentImage">Current Profile Image:</label><br>
+                <img alt="Profile picture" height="100"
+                     id="currentImage"
+                     th:src="${user.profileImage != null ? '/user/image/' + user.id : '/images/Default_pfp.svg'}"
+                     width="100">
+            </div>
 
-        <!-- Image Upload -->
-        <label for="image">Upload Image:</label><br>
-        <input id="image" name="imageFile" th:field="*{imageFile}" type="file"><br>
-        <p th:errors="*{imageFile}" th:if="${#fields.hasErrors('imageFile')}"></p>
+            <!-- Image Upload -->
+            <div class="mb-3">
+                <label class="form-label" for="image">Upload Image:</label><br>
+                <input class="form-control" id="image" name="imageFile" th:field="*{imageFile}" type="file">
+                <span class="text-danger" th:errors="*{imageFile}"></span>
+            </div>
 
-        <button type="submit">Update Profile</button>
-    </form>
+            <button class="btn btn-primary" type="submit">Update Profile</button>
+        </form>
+    </div>
 </div>
 
 </body>

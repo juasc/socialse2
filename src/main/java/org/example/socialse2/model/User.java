@@ -2,6 +2,7 @@ package org.example.socialse2.model;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.util.Date;
 import java.util.HashSet;
@@ -34,6 +35,7 @@ public class User {
 
     private String bio;
 
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     private Date dateOfBirth;
 
     private String website;

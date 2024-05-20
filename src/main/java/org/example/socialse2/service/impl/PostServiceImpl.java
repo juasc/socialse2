@@ -8,7 +8,8 @@ import org.example.socialse2.repository.PostRepository;
 import org.example.socialse2.repository.UserRepository;
 import org.example.socialse2.service.PostService;
 import org.example.socialse2.util.SecurityUtils;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -30,13 +31,11 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public List<PostDto> getPosts() {
-        // Fetch posts sorted by createdAt in descending order
-        List<Post> sortedPosts = postRepository.findAll(Sort.by(Sort.Direction.DESC, "createdAt"));
-        // Map the sorted posts to DTOs
-        return sortedPosts.stream().map(PostMapper::toDto).collect(Collectors.toList());
+    public Page<PostDto> getPosts(PageRequest pageRequest) {
+        return postRepository.findAll(pageRequest).map(PostMapper::toDto);
     }
 
+    @Override
     public void createPost(PostDto postDto) {
         String username = Objects.requireNonNull(SecurityUtils.getCurrentUserDetails()).getUsername();
         User user = userRepository.findByUsername(username);

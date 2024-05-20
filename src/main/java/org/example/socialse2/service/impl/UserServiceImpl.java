@@ -12,6 +12,9 @@ import org.example.socialse2.repository.RoleRepository;
 import org.example.socialse2.repository.UserRepository;
 import org.example.socialse2.service.UserService;
 import org.example.socialse2.util.SecurityUtils;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -143,11 +146,6 @@ public class UserServiceImpl implements UserService {
         }
     }
 
-    @Override
-    public List<UserDto> getUsers() {
-        return userRepository.findAll().stream().map(UserMapper::toDto).collect(Collectors.toList());
-    }
-
     @Transactional
     @Override
     public void deleteUser(Long id) {
@@ -168,6 +166,12 @@ public class UserServiceImpl implements UserService {
     @Override
     public List<UserDto> searchUsers(String query) {
         return userRepository.searchUsers(query).stream().map(UserMapper::toDto).collect(Collectors.toList());
+    }
+
+    @Override
+    public Page<UserDto> getUsers(int page, int size) {
+        Pageable pageable = PageRequest.of(page - 1, size);
+        return userRepository.findAll(pageable).map(UserMapper::toDto);
     }
 
 }

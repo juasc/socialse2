@@ -50,7 +50,7 @@
                     <div class="post-buttons">
                         <a class="btn btn-primary" th:href="@{/post/{postId}(postId=${post.id})}">View</a>
                         <!-- Show edit and delete options if the user is the owner -->
-                        <div th:if="${#authentication.name == post.getOwnerName}">
+                        <div th:if="${#authentication.name == post.ownerName}">
                             <a class="btn btn-secondary" th:href="@{/post/{postId}/edit(postId=${post.id})}">Edit</a>
                             <a class="btn btn-danger" th:href="@{/post/{postId}/delete(postId=${post.id})}">Delete</a>
                         </div>
@@ -59,6 +59,33 @@
             </div>
         </div>
     </div>
+
+    <!-- Pagination controls -->
+    <nav aria-label="Page navigation">
+        <ul class="pagination">
+            <li class="page-item" th:classappend="${currentPage == 1}? 'disabled'">
+                <a class="page-link" th:href="@{/(page=1)}">First</a>
+            </li>
+            <li class="page-item" th:classappend="${currentPage == 1}? 'disabled'">
+                <a aria-label="Previous" class="page-link" th:href="@{/(page=${currentPage - 1})}">
+                    <span aria-hidden="true">&laquo;</span>
+                </a>
+            </li>
+            <li class="page-item" th:classappend="${i == currentPage}? 'active'"
+                th:each="i : ${#numbers.sequence(1, totalPages)}">
+                <a class="page-link" th:href="@{/(page=${i})}" th:text="${i}"></a>
+            </li>
+            <li class="page-item" th:classappend="${currentPage == totalPages}? 'disabled'">
+                <a aria-label="Next" class="page-link" th:href="@{/(page=${currentPage + 1})}">
+                    <span aria-hidden="true">&raquo;</span>
+                </a>
+            </li>
+            <li class="page-item" th:classappend="${currentPage == totalPages}? 'disabled'">
+                <a class="page-link" th:href="@{/(page=${totalPages})}">Last</a>
+            </li>
+        </ul>
+    </nav>
+
 </div>
 <script src="/js/bootstrap.bundle.min.js"></script>
 </body>

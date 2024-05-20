@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity6"
+      xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <title>Fragment File</title>
@@ -9,13 +10,15 @@
     <nav>
         <ul>
             <li><a th:href="@{/}">Home</a></li>
-            <li><a th:href="@{/admin}">Admin</a></li>
-            <li><a th:href="@{/posts/create}">Create Post</a></li>
-            <li><a th:href="@{/register}">Register</a></li>
-            <li><a th:href="@{/login}">Login</a></li>
-            <li><a th:href="@{/logout}">Logout</a></li>
+            <li sec:authorize="hasRole('ADMIN')"><a th:href="@{/admin/posts}">Posts Management</a></li>
+            <li sec:authorize="hasRole('ADMIN')"><a th:href="@{/admin/users}">Users Management</a></li>
+            <li sec:authorize="isAuthenticated()"><a th:href="@{/post/create}">Create Post</a></li>
+            <li sec:authorize="!isAuthenticated()"><a th:href="@{/register}">Register</a></li>
+            <li sec:authorize="!isAuthenticated()"><a th:href="@{/login}">Login</a></li>
+            <li sec:authorize="isAuthenticated()"><a th:href="@{/user}">Profile</a></li>
+            <li sec:authorize="isAuthenticated()"><a th:href="@{/logout}">Logout</a></li>
             <li>
-                <form method="get" th:action="@{/posts/search}">
+                <form method="get" th:action="@{/search}">
                     <label>
                         <input name="query" type="text">
                     </label>

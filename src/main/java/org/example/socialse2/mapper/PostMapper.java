@@ -10,11 +10,12 @@ public class PostMapper {
                       .id(post.getId())
                       .title(post.getTitle())
                       .content(post.getContent())
-                      .imageUrl(post.getImageUrl())
+                      .image(post.getImage())
                       .createdAt(post.getCreatedAt())
                       .updatedAt(post.getUpdatedAt())
                       .upVotes(post.getUpVotes())
                       .downVotes(post.getDownVotes())
+                      .ownerName(post.getUser().getUsername())
                       .shortDescription(post.getShortDescription())
                       .build();
     }
@@ -24,7 +25,7 @@ public class PostMapper {
                    .id(postDto.getId())
                    .title(postDto.getTitle())
                    .content(postDto.getContent())
-                   .imageUrl(postDto.getImageUrl())
+                   .image(postDto.getImage())
                    .createdAt(postDto.getCreatedAt())
                    .updatedAt(postDto.getUpdatedAt())
                    .upVotes(postDto.getUpVotes())

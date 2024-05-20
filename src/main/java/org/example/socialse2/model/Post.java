@@ -24,7 +24,9 @@ public class Post {
     @Column(nullable = false)
     private String title;
 
-    private String imageUrl;
+    @Lob
+    @Column(columnDefinition = "LONGBLOB")
+    private byte[] image;
 
     @Lob
     @Column(nullable = false, length = 65535)

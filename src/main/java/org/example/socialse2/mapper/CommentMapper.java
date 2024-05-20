@@ -11,6 +11,7 @@ public class CommentMapper {
                          .content(comment.getContent())
                          .createdAt(comment.getCreatedAt())
                          .updatedAt(comment.getUpdatedAt())
+                         .ownerName(comment.getUser().getFirstName() + " " + comment.getUser().getLastName())
                          .build();
     }
 

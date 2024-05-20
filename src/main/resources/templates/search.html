@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Search</title>
+</head>
+<body>
+<header th:replace="~{fragments :: header}"></header>
+
+<h1>Search Results</h1>
+
+<!-- Users Found Section -->
+<h2>Users Found</h2>
+<div th:if="${users}">
+    <ul>
+        <li th:each="user : ${users}">
+            <a th:href="@{/user/{userId}(userId=${user.id})}" th:text="${user.username}"></a>
+        </li>
+    </ul>
+</div>
+<div th:unless="${users}">
+    <p>No users found.</p>
+</div>
+
+<!-- Posts Found Section -->
+<h2>Posts Found</h2>
+<div th:if="${posts}">
+    <ul>
+        <li th:each="post : ${posts}">
+            <a th:href="@{/post/{postId}(postId=${post.id})}" th:text="${post.title}"></a>
+        </li>
+    </ul>
+</div>
+<div th:unless="${posts}">
+    <p>No posts found.</p>
+</div>
+
+</body>
+</html>

@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.validator.constraints.Length;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
 
@@ -21,13 +22,15 @@ public class PostDto {
     private String title;
 
     @NotEmpty(message = "Content must not be empty")
-    @Length(message = "Content must be less than 65535 characters")
+    @Length(message = "Content must be less than 65535 characters", max = 65535)
     private String content;
 
     @NotEmpty(message = "Short description must not be empty")
     private String shortDescription;
 
-    private String imageUrl;
+    private byte[] image;
+
+    private MultipartFile imageFile;
 
     private Long upVotes;
 
@@ -36,5 +39,7 @@ public class PostDto {
     private LocalDateTime createdAt;
 
     private LocalDateTime updatedAt;
+
+    private String ownerName;
 
 }

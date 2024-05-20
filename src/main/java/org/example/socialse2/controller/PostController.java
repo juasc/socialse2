@@ -3,18 +3,25 @@ package org.example.socialse2.controller;
 import jakarta.validation.Valid;
 import org.example.socialse2.dto.CommentDto;
 import org.example.socialse2.dto.PostDto;
+import org.example.socialse2.model.Comment;
 import org.example.socialse2.service.CommentService;
 import org.example.socialse2.service.PostService;
+import org.example.socialse2.service.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
+import java.io.IOException;
+import java.security.Principal;
 
 @Controller
+@RequestMapping("/post")
 public class PostController {
 
     private static final Logger log = LoggerFactory.getLogger(PostController.class);
@@ -23,94 +30,118 @@ public class PostController {
 
     private final CommentService commentService;
 
-    public PostController(PostService postService, CommentService commentService) {
+    private final UserService userService;
+
+    public PostController(PostService postService, CommentService commentService, UserService userService) {
         this.postService = postService;
         this.commentService = commentService;
+        this.userService = userService;
     }
 
-    @GetMapping("/posts/create")
+    @GetMapping("/create")
     private String newPostForm(Model model) {
         PostDto postDto = new PostDto();
         model.addAttribute("postDto", postDto);
-        return "create_post";
+        return "post/create";
     }
 
-    @PostMapping("/posts/create")
+    @PostMapping("/create")
     public String createPost(@Valid @ModelAttribute("postDto") PostDto postDto,
                              BindingResult bindingResult,
-                             Model model) {
+                             Model model,
+                             Principal principal) throws IOException {
+        if (principal == null) {
+            return "error/access_denied";
+        }
         if (bindingResult.hasErrors()) {
             model.addAttribute("postDto", postDto);
-            return "create_post";
+            return "post/create";
+        }
+        if (postDto.getImageFile() != null && !postDto.getImageFile().isEmpty()) {
+            postDto.setImage(postDto.getImageFile().getBytes());
         }
         postService.createPost(postDto);
-        log.info("Post created: {}", postDto.toString());
-        return "redirect:/";
+        log.info("Post created: {}", postDto);
+        return userService.isAdmin(principal.getName()) ? "redirect:/admin/posts" : "redirect:/";
     }
 
-    @GetMapping("/posts/{postId}/edit")
-    private String editPostForm(@PathVariable Long postId, Model model) {
-        PostDto postDto = postService.getPost(postId);
-        model.addAttribute("postDto", postDto);
-        return "edit_post";
+    @GetMapping("/{postId}/edit")
+    private String editPostForm(@PathVariable Long postId, Model model, Principal principal) {
+        if (principal != null &&
+            (userService.isAdmin(principal.getName()) || userService.isOwnerOfPost(principal.getName(), postId))) {
+            PostDto postDto = postService.getPost(postId);
+            model.addAttribute("postDto", postDto);
+            return "post/edit";
+        }
+        return "error/access_denied";
     }
 
-    @PostMapping("/posts/{postId}/edit")
+    @PostMapping("/{postId}/edit")
     public String editPost(@PathVariable Long postId,
-                           @ModelAttribute("postDto") PostDto postDto,
+                           @Valid @ModelAttribute("postDto") PostDto postDto,
                            BindingResult bindingResult,
-                           Model model) {
+                           Model model,
+                           Principal principal) throws IOException {
         if (bindingResult.hasErrors()) {
             model.addAttribute("postDto", postDto);
-            return "edit_post";
+            return "post/edit";
         }
-        postDto.setId(postId);
+        if (postDto.getImageFile() != null && !postDto.getImageFile().isEmpty()) {
+            postDto.setImage(postDto.getImageFile().getBytes());
+        }
         postService.updatePost(postDto);
         log.info("Post updated: {}", postDto);
-        return "redirect:/";
+        return userService.isAdmin(principal.getName()) ? "redirect:/admin/posts" : "redirect:/";
     }
 
-    @GetMapping("/posts/{postId}/delete")
-    public String deletePost(@PathVariable Long postId) {
-        postService.deletePost(postId);
-        return "redirect:/";
+    @GetMapping("/{postId}/delete")
+    public String deletePost(@PathVariable Long postId, Principal principal) {
+        String username = principal.getName();
+        boolean isAdmin = userService.isAdmin(username);
+        boolean isOwner = userService.isOwnerOfPost(username, postId);
+        if (isAdmin || isOwner) {
+            postService.deletePost(postId);
+            return isAdmin ? "redirect:/admin/posts" : "redirect:/";
+        }
+        return "error/access_denied";
     }
 
-    @GetMapping("/posts/{postId}")
+    @GetMapping("/{postId}")
     public String viewPost(@PathVariable Long postId, Model model) {
         PostDto postDto = postService.getPost(postId);
         model.addAttribute("postDto", postDto);
         model.addAttribute("commentDto", new CommentDto());
         model.addAttribute("comments", commentService.getComments(postId));
-        return "view_post";
+        return "post/view";
     }
 
-    @PostMapping("/posts/{postId}/comments")
-    public String addComment(@PathVariable Long postId, @ModelAttribute("commentDto") CommentDto commentDto) {
+    @PostMapping("/{postId}/comment")
+    public String addComment(@PathVariable Long postId,
+                             @ModelAttribute("commentDto") CommentDto commentDto,
+                             Principal principal) {
+        if (principal == null) {
+            return "error/access_denied";
+        }
         commentService.addComment(postId, commentDto);
-        return "redirect:/posts/{postId}";
+        return "redirect:/post/{postId}";
     }
 
-    @GetMapping("/posts/{postId}/comments/{commentId}/delete")
-    public String deleteComment(@PathVariable Long postId,
-                                @PathVariable Long commentId,
-                                @ModelAttribute("commentDto") CommentDto commentDto) {
+    @GetMapping("/{postId}/comment/{commentId}/delete")
+    public String deleteComment(@PathVariable Long postId, @PathVariable Long commentId, Principal principal) {
+        Comment comment = commentService.getById(commentId);
+        String commentOwner = comment.getUser().getUsername();
+        if (principal == null || !commentOwner.equals(principal.getName())) {
+            return "error/access_denied";
+        }
         commentService.deleteComment(commentId);
-        return "redirect:/posts/{postId}";
+        return "redirect:/post/" + postId;
     }
 
-    @GetMapping("/posts/search")
-    public String searchPosts(@RequestParam(value = "query") String query, Model model) {
-        log.info("Searching posts: {}", query);
-        List<PostDto> postDtoList = postService.searchPosts(query);
-        model.addAttribute("posts", postDtoList);
-        return "index";
-    }
-
-    @GetMapping("/")
-    public String index(Model model) {
-        model.addAttribute("posts", postService.getPosts());
-        return "index";
+    @GetMapping("/image/{id}")
+    public ResponseEntity<byte[]> getImage(@PathVariable Long id) {
+        PostDto postDto = postService.getPost(id);
+        byte[] image = postDto.getImage();
+        return ResponseEntity.ok().header(HttpHeaders.CONTENT_TYPE, MediaType.IMAGE_JPEG_VALUE).body(image);
     }
 
 }

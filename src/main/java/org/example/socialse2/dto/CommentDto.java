@@ -19,4 +19,6 @@ public class CommentDto {
 
     private LocalDateTime updatedAt;
 
+    private String ownerName;
+
 }

@@ -3,12 +3,16 @@ package org.example.socialse2.service.impl;
 import org.example.socialse2.dto.PostDto;
 import org.example.socialse2.mapper.PostMapper;
 import org.example.socialse2.model.Post;
+import org.example.socialse2.model.User;
 import org.example.socialse2.repository.PostRepository;
+import org.example.socialse2.repository.UserRepository;
 import org.example.socialse2.service.PostService;
+import org.example.socialse2.util.SecurityUtils;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -16,8 +20,11 @@ public class PostServiceImpl implements PostService {
 
     private final PostRepository postRepository;
 
-    public PostServiceImpl(PostRepository postRepository) {
+    private final UserRepository userRepository;
+
+    public PostServiceImpl(PostRepository postRepository, UserRepository userRepository) {
         this.postRepository = postRepository;
+        this.userRepository = userRepository;
     }
 
     @Override
@@ -26,7 +33,10 @@ public class PostServiceImpl implements PostService {
     }
 
     public void createPost(PostDto postDto) {
+        String username = Objects.requireNonNull(SecurityUtils.getCurrentUserDetails()).getUsername();
+        User user = userRepository.findByUsername(username);
         Post post = PostMapper.toEntity(postDto);
+        post.setUser(user);
         postRepository.save(post);
     }
 

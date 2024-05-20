@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>User Profile</title>
+</head>
+<body>
+<header th:replace="~{fragments :: header}"></header>
+
+<div th:object="${user}">
+    <h1>User Profile</h1>
+    <img alt="Profile picture" height="100" th:src="@{/user/image/{id}(id=${user.id})}" width="100">
+    <p><strong>First Name:</strong> <span th:text="*{firstName}"></span></p>
+    <p><strong>Last Name:</strong> <span th:text="*{lastName}"></span></p>
+    <p><strong>Email:</strong> <span th:text="*{email}"></span></p>
+    <p><strong>Username:</strong> <span th:text="*{username}"></span></p>
+    <p><strong>Bio:</strong> <span th:text="*{bio}"></span></p>
+    <p><strong>Date of Birth:</strong> <span th:text="*{dateOfBirth}"></span></p>
+    <p><strong>Website:</strong> <span th:text="*{website}"></span></p>
+    <div th:if="${#authentication.name == user.username}">
+        <a th:href="@{/user/edit}">Edit Profile</a>
+        <a th:href="@{/user/delete}">Delete Profile</a>
+    </div>
+</div>
+
+</body>
+</html>

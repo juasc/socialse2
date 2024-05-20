@@ -1,8 +1,8 @@
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <title>Home</title>
-
 </head>
 <body>
 <header th:replace="~{fragments :: header}"></header>
@@ -13,6 +13,7 @@
     <th>Title</th>
     <th>Short Description</th>
     <th>Content</th>
+    <th>Image</th>
     <th>Creation Date</th>
     <th>Action</th>
     </thead>
@@ -22,9 +23,14 @@
         <td th:text="${post.title}">Title</td>
         <td th:text="${post.shortDescription}">Short Description</td>
         <td th:text="${post.content}">Content</td>
+        <td><img alt="Post image" height="100" th:src="@{/post/image/{id}(id=${post.id})}" width="100"></td>
         <td th:text="${#temporals.format(post.createdAt,'hh:mm:ss - dd/MM/yyyy')}">Creation Time</td>
         <td>
-            <a th:href="@{/posts/{postId}(postId=${post.id})}">View</a>
+            <a th:href="@{/post/{postId}(postId=${post.id})}">View</a>
+            <div th:if="${#authentication.name == post.getOwnerName}">
+                <a th:href="@{/post/{postId}/edit(postId=${post.id})}">Edit</a>
+                <a th:href="@{/post/{postId}/delete(postId=${post.id})}">Delete</a>
+            </div>
         </td>
     </tr>
     </tbody>

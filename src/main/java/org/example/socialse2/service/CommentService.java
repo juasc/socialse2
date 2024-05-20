@@ -1,6 +1,7 @@
 package org.example.socialse2.service;
 
 import org.example.socialse2.dto.CommentDto;
+import org.example.socialse2.model.Comment;
 
 import java.util.List;
 
@@ -12,6 +13,6 @@ public interface CommentService {
 
     void deleteComment(Long commentId);
 
-    boolean commentBelongsToPost(Long postId, Long commentId);
+    Comment getById(Long commentId);
 
 }

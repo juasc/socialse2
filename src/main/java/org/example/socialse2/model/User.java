@@ -3,7 +3,9 @@ package org.example.socialse2.model;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.Date;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Setter
@@ -29,6 +31,19 @@ public class User {
     private String email;
 
     private String password;
+
+    private String bio;
+
+    private Date dateOfBirth;
+
+    private String website;
+
+    @Lob
+    @Column(columnDefinition = "LONGBLOB")
+    private byte[] profileImage;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE)
+    private List<Post> posts;
 
     @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinTable(name = "users_roles",

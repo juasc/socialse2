@@ -28,7 +28,7 @@
                 <p><strong>Website:</strong> <span th:text="*{website}"></span></p>
                 <div th:if="${#authentication.name == user.username}">
                     <a class="btn btn-primary me-2" th:href="@{/user/edit}">Edit Profile</a>
-                    <a class="btn btn-danger" th:href="@{/user/delete}">Delete Profile</a>
+                    <a class="btn btn-danger" th:href="@{'/user/' + *{id} + '/delete'}">Delete Profile</a>
                 </div>
             </div>
         </div>

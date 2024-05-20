@@ -154,6 +154,11 @@ public class UserServiceImpl implements UserService {
         User currentUser = getCurrentUser();
         User userToDelete = findById(id);
         if (currentUser.getId().equals(userToDelete.getId()) || isAdmin(currentUser.getUsername())) {
+            // Remove the association between the User and the Role
+            userToDelete.setRoles(null);
+            // Save the User
+            userRepository.save(userToDelete);
+            // Now you can delete the User
             userRepository.delete(userToDelete);
         } else {
             throw new SecurityException("Unauthorized operation");

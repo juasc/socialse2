@@ -86,6 +86,11 @@ public class UserController {
         if (principal == null) {
             return "error/access_denied";
         }
+        User currentUser = userService.getCurrentUser();
+        if (userService.isAdmin(currentUser.getUsername())) {
+            userService.deleteUser(id);
+            return "redirect:/admin/users";
+        }
         userService.deleteUser(id);
         return "redirect:/logout";
     }
